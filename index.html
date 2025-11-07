@@ -36,7 +36,6 @@
   .radio-row { display:flex; gap:12px; align-items:center; margin-top:6px; }
   .radio-row input { width:auto; }
   #status { margin-top:15px; font-weight:bold; text-align:center; }
-  #hidden_iframe { display:none; }
 </style>
 </head>
 <body>
@@ -47,10 +46,7 @@
   <h1>Open House Contact Form</h1>
   <p><strong>Date:</strong> <span id="currentDate"></span></p>
 
-  <!-- Hidden iframe -->
-  <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
-
-  <form id="contactForm" action="https://script.google.com/macros/s/AKfycbyykotd0obNovBX7MXG3Sjd0_5nPUpitN8mD0Ga9P8VRJYqO849RzU6XI7OvPUjm7Rz4A/exec" method="POST" target="hidden_iframe" onsubmit="return prepareSubmit()">
+  <form id="contactForm" action="https://script.google.com/macros/s/AKfycbySjY5qYlhtzExk1K9TYAS2wM5bjHeE6Kp7TfylWSMcicgqNqzQOiTK3PQuBNCBNDJluw/exec" method="POST">
     <label>Neighborhood</label>
     <input type="text" name="neighborhood" id="neighborhood" required>
 
@@ -93,38 +89,49 @@
     if (savedAddress) document.getElementById('address').value = savedAddress;
   };
 
-  // Prepare form submission
-  function prepareSubmit() {
-    const form = document.getElementById('contactForm');
+  // Handle form submission
+  document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
     const status = document.getElementById('status');
 
-    // Save neighborhood & address
-    localStorage.setItem('neighborhood', form.neighborhood.value);
-    localStorage.setItem('address', form.address.value);
+    const data = {
+      neighborhood: form.neighborhood.value,
+      address: form.address.value,
+      fullName: form.fullName.value,
+      phone: form.phone.value,
+      email: form.email.value,
+      realtor: form.querySelector('input[name="realtor"]:checked')?.value || '',
+      howHeard: form.howHeard.value || ''
+    };
 
-    // Ensure radio button has value
-    const realtorChecked = form.querySelector('input[name="realtor"]:checked');
-    if (!realtorChecked) {
-      alert("Please select if you have a Realtor");
-      return false; // Prevent submission
+    // Save neighborhood & address in localStorage
+    localStorage.setItem('neighborhood', data.neighborhood);
+    localStorage.setItem('address', data.address);
+
+    try {
+      await fetch(form.action, {
+        method: 'POST',
+        mode: 'no-cors', // Required for cross-origin Apps Script
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data)
+      });
+
+      // Show submission message
+      status.textContent = "✅ Submission received!";
+
+      // Clear other fields
+      form.fullName.value = '';
+      form.phone.value = '';
+      form.email.value = '';
+      form.howHeard.value = '';
+      form.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+
+      setTimeout(() => { status.textContent = ''; }, 5000);
+    } catch (err) {
+      alert("Error submitting form: " + err);
     }
-
-    // Show submission alert
-    status.textContent = "✅ Submission received!";
-
-    // Clear other fields after submit
-    form.fullName.value = '';
-    form.phone.value = '';
-    form.email.value = '';
-    form.howHeard.value = '';
-    const radios = form.querySelectorAll('input[type=radio]');
-    radios.forEach(r => r.checked = false);
-
-    // Auto-hide alert after 5 seconds
-    setTimeout(() => { status.textContent = ''; }, 5000);
-
-    return true; // Allow form to submit
-  }
+  });
 </script>
 </body>
 </html>
