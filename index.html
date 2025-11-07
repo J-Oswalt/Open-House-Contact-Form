@@ -33,53 +33,60 @@
       margin-bottom: 10px;
     }
     label {
-      display: block;
-      margin-top: 10px;
-      font-weight: 600;
+      display:block;
+      margin-top:10px;
+      font-weight:600;
     }
     input, textarea, button {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: none;
-      box-sizing: border-box;
+      width:100%;
+      padding:8px;
+      margin-top:5px;
+      border-radius:4px;
+      border:none;
+      box-sizing:border-box;
     }
     button {
-      background-color: #1E90FF;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 15px;
+      background-color:#1E90FF;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+      margin-top:15px;
     }
     button:hover {
       filter: brightness(0.95);
     }
     .radio-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-top: 6px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-top:6px;
     }
     .radio-row input {
-      width: auto;
+      width:auto;
     }
     #status {
       margin-top: 15px;
       font-weight: bold;
       text-align: center;
     }
+    /* Hide the iframe */
+    #hidden_iframe {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Logo -->
-    <img src="CartoonImage.jpg" alt="Logo" class="logo">
+    <img src="Cartoon Image.jpg" alt="Logo" class="logo">
 
     <h1>Open House Contact Form</h1>
     <p><strong>Date:</strong> <span id="currentDate"></span></p>
 
-    <form id="contactForm">
+    <!-- Hidden iframe -->
+    <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
+
+    <!-- Form submits directly to Apps Script /exec URL -->
+    <form id="contactForm" action="https://script.google.com/macros/s/AKfycbw6XG-ZeIPGHLhdFRuiJzcAG4qJHWh_npp1y87705JbwGlOL7eHzZEn8gpagKJ7ec2EpA/exec" method="POST" target="hidden_iframe" onsubmit="showStatus()">
       <label>Neighborhood</label>
       <input type="text" name="neighborhood" required>
 
@@ -111,41 +118,23 @@
   </div>
 
   <script>
-    // Display current date
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
 
-    document.getElementById('contactForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const form = e.target;
+    function showStatus() {
+      const status = document.getElementById('status');
+      status.textContent = "✅ Submission received!";
+      // Clear all fields except neighborhood & address
+      const form = document.getElementById('contactForm');
+      form.fullName.value = '';
+      form.phone.value = '';
+      form.email.value = '';
+      form.howHeard.value = '';
+      const radios = form.querySelectorAll('input[type=radio]');
+      radios.forEach(r => r.checked = false);
 
-      const data = {
-        neighborhood: form.neighborhood.value,
-        address: form.address.value,
-        fullName: form.fullName.value,
-        phone: form.phone.value,
-        email: form.email.value,
-        realtor: form.realtor.value,
-        howHeard: form.howHeard.value
-      };
-
-      try {
-        const res = await fetch('https://script.google.com/macros/s/AKfycbw6XG-ZeIPGHLhdFRuiJzcAG4qJHWh_npp1y87705JbwGlOL7eHzZEn8gpagKJ7ec2EpA/exec', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(data)
-        });
-        const json = await res.json();
-
-        if(json.status === 'ok'){
-          document.getElementById('status').textContent = "✅ Submission received!";
-          form.reset();
-        } else {
-          document.getElementById('status').textContent = "❌ Error: " + json.message;
-        }
-      } catch(err) {
-        document.getElementById('status').textContent = "❌ Network error: " + err.message;
-      }
-    });
+      // Auto-hide after 5 seconds
+      setTimeout(() => { status.textContent = ''; }, 5000);
+    }
   </script>
 </body>
 </html>
