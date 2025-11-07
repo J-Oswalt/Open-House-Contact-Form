@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open House Contact Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff2f2;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(0,0,0,0.75);
+      padding: 20px;
+      border-radius: 8px;
+      color: white;
+    }
+    label { display:block; margin-top:10px; font-weight:600; }
+    input, textarea, button { width:100%; padding:8px; margin-top:5px; border-radius:4px; border:none; box-sizing:border-box; }
+    button { background:#1E90FF; color:white; font-size:16px; cursor:pointer; margin-top:15px; }
+    button:hover { filter: brightness(.95); }
+    .radio-row { display:flex; gap:12px; align-items:center; margin-top:6px; }
+    .radio-row input { width:auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Open House Contact Form</h1>
+    <p><strong>Date:</strong> <span id="currentDate"></span></p>
+    
+    <form id="contactForm">
+      <label>Neighborhood</label>
+      <input type="text" name="neighborhood" required>
+      
+      <label>Address</label>
+      <input type="text" name="address" required>
+      
+      <label>Full Name *</label>
+      <input type="text" name="fullName" required>
+      
+      <label>Phone Number *</label>
+      <input type="tel" name="phone" required>
+      
+      <label>Email *</label>
+      <input type="email" name="email" required>
+      
+      <label>Do you have a Realtor?</label>
+      <div class="radio-row">
+        <label><input type="radio" name="realtor" value="Yes"> Yes</label>
+        <label><input type="radio" name="realtor" value="No"> No</label>
+      </div>
+      
+      <label>How did you hear about the Open House?</label>
+      <textarea name="howHeard" rows="3" placeholder="e.g., Zillow, Sign, Social Media"></textarea>
+      
+      <button type="submit">Submit</button>
+    </form>
+    <p id="status"></p>
+  </div>
+  
+  <script>
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+
+    document.getElementById('contactForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        neighborhood: form.neighborhood.value,
+        address: form.address.value,
+        fullName: form.fullName.value,
+        phone: form.phone.value,
+        email: form.email.value,
+        realtor: form.realtor.value,
+        howHeard: form.howHeard.value
+      };
+
+      try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycbw6XG-ZeIPGHLhdFRuiJzcAG4qJHWh_npp1y87705JbwGlOL7eHzZEn8gpagKJ7ec2EpA/exec', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if(json.status === 'ok'){
+          document.getElementById('status').textContent = "Submission received!";
+          form.reset();
+        } else {
+          document.getElementById('status').textContent = "Error: " + json.message;
+        }
+      } catch(err) {
+        document.getElementById('status').textContent = "Network error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
