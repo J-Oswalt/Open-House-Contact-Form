@@ -41,7 +41,7 @@
 </head>
 <body>
 <div class="container">
-  <!-- Logo from same repo -->
+  <!-- Logo from repo -->
   <img src="CartoonImage.jpg" alt="Logo" class="logo">
 
   <h1>Open House Contact Form</h1>
@@ -50,7 +50,7 @@
   <!-- Hidden iframe -->
   <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
 
-  <form id="contactForm" action="https://script.google.com/macros/s/AKfycbySjY5qYlhtzExk1K9TYAS2wM5bjHeE6Kp7TfylWSMcicgqNqzQOiTK3PQuBNCBNDJluw/exec" method="POST" target="hidden_iframe" onsubmit="showStatus()">
+  <form id="contactForm" action="https://script.google.com/macros/s/AKfycbySjY5qYlhtzExk1K9TYAS2wM5bjHeE6Kp7TfylWSMcicgqNqzQOiTK3PQuBNCBNDJluw/exec" method="POST" target="hidden_iframe" onsubmit="return prepareSubmit()">
     <label>Neighborhood</label>
     <input type="text" name="neighborhood" id="neighborhood" required>
 
@@ -68,7 +68,7 @@
 
     <label>Do you have a Realtor?</label>
     <div class="radio-row">
-      <label><input type="radio" name="realtor" value="Yes"> Yes</label>
+      <label><input type="radio" name="realtor" value="Yes" required> Yes</label>
       <label><input type="radio" name="realtor" value="No"> No</label>
     </div>
 
@@ -82,8 +82,8 @@
 </div>
 
 <script>
-  const currentDate = new Date().toLocaleDateString();
-  document.getElementById('currentDate').textContent = currentDate;
+  // Display current date
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
 
   // Load saved neighborhood & address
   window.onload = () => {
@@ -93,7 +93,8 @@
     if (savedAddress) document.getElementById('address').value = savedAddress;
   };
 
-  function showStatus() {
+  // Prepare form submission
+  function prepareSubmit() {
     const form = document.getElementById('contactForm');
     const status = document.getElementById('status');
 
@@ -101,10 +102,17 @@
     localStorage.setItem('neighborhood', form.neighborhood.value);
     localStorage.setItem('address', form.address.value);
 
+    // Ensure radio button has value
+    const realtorChecked = form.querySelector('input[name="realtor"]:checked');
+    if (!realtorChecked) {
+      alert("Please select if you have a Realtor");
+      return false; // Prevent submission
+    }
+
     // Show submission alert
     status.textContent = "✅ Submission received!";
 
-    // Clear other fields
+    // Clear other fields after submit
     form.fullName.value = '';
     form.phone.value = '';
     form.email.value = '';
@@ -112,8 +120,10 @@
     const radios = form.querySelectorAll('input[type=radio]');
     radios.forEach(r => r.checked = false);
 
-    // Auto-hide alert
+    // Auto-hide alert after 5 seconds
     setTimeout(() => { status.textContent = ''; }, 5000);
+
+    return true; // Allow form to submit
   }
 </script>
 </body>
