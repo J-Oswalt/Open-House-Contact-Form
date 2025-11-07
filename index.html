@@ -1,140 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Open House Contact Form</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #fff2f2;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      max-width: 600px;
-      width: 100%;
-      background: rgba(0,0,0,0.75);
-      padding: 20px;
-      border-radius: 8px;
-      color: white;
-      box-sizing: border-box;
-    }
-    .logo {
-      display: block;
-      max-width: 300px;
-      margin: 0 auto 20px auto;
-      border-radius: 10px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    label {
-      display:block;
-      margin-top:10px;
-      font-weight:600;
-    }
-    input, textarea, button {
-      width:100%;
-      padding:8px;
-      margin-top:5px;
-      border-radius:4px;
-      border:none;
-      box-sizing:border-box;
-    }
-    button {
-      background-color:#1E90FF;
-      color:white;
-      font-size:16px;
-      cursor:pointer;
-      margin-top:15px;
-    }
-    button:hover {
-      filter: brightness(0.95);
-    }
-    .radio-row {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      margin-top:6px;
-    }
-    .radio-row input {
-      width:auto;
-    }
-    #status {
-      margin-top: 15px;
-      font-weight: bold;
-      text-align: center;
-    }
-    /* Hide the iframe */
-    #hidden_iframe {
-      display: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open House Contact Form</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #fff2f2;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    max-width: 600px;
+    width: 100%;
+    background: rgba(0,0,0,0.75);
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
+    box-sizing: border-box;
+  }
+  .logo {
+    display: block;
+    max-width: 300px;
+    margin: 0 auto 20px auto;
+    border-radius: 10px;
+  }
+  h1 { text-align:center; margin-bottom:10px; }
+  label { display:block; margin-top:10px; font-weight:600; }
+  input, textarea, button { width:100%; padding:8px; margin-top:5px; border-radius:4px; border:none; box-sizing:border-box; }
+  button { background-color:#1E90FF; color:white; font-size:16px; cursor:pointer; margin-top:15px; }
+  button:hover { filter: brightness(0.95); }
+  .radio-row { display:flex; gap:12px; align-items:center; margin-top:6px; }
+  .radio-row input { width:auto; }
+  #status { margin-top:15px; font-weight:bold; text-align:center; }
+  #hidden_iframe { display:none; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <img src="CartoonImage.jpg" alt="Logo" class="logo">
+<div class="container">
+  <!-- Logo from same repo -->
+  <img src="CartoonImage.jpg" alt="Logo" class="logo">
 
-    <h1>Open House Contact Form</h1>
-    <p><strong>Date:</strong> <span id="currentDate"></span></p>
+  <h1>Open House Contact Form</h1>
+  <p><strong>Date:</strong> <span id="currentDate"></span></p>
 
-    <!-- Hidden iframe -->
-    <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
+  <!-- Hidden iframe -->
+  <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
 
-    <!-- Form submits directly to Apps Script /exec URL -->
-    <form id="contactForm" action="https://script.google.com/macros/s/AKfycbz5ly_Afdh9jVj5FECENT7zbBL-JjXjOo8z1Ontwev63_oL8iFnh-EdvaXwzaOeHhPXMw/exec" method="POST" target="hidden_iframe" onsubmit="showStatus()">
-      <label>Neighborhood</label>
-      <input type="text" name="neighborhood" required>
+  <form id="contactForm" action="https://script.google.com/macros/s/AKfycbySjY5qYlhtzExk1K9TYAS2wM5bjHeE6Kp7TfylWSMcicgqNqzQOiTK3PQuBNCBNDJluw/exec" method="POST" target="hidden_iframe" onsubmit="showStatus()">
+    <label>Neighborhood</label>
+    <input type="text" name="neighborhood" id="neighborhood" required>
 
-      <label>Address</label>
-      <input type="text" name="address" required>
+    <label>Address</label>
+    <input type="text" name="address" id="address" required>
 
-      <label>Full Name *</label>
-      <input type="text" name="fullName" required>
+    <label>Full Name *</label>
+    <input type="text" name="fullName" required>
 
-      <label>Phone Number *</label>
-      <input type="tel" name="phone" required>
+    <label>Phone Number *</label>
+    <input type="tel" name="phone" required>
 
-      <label>Email *</label>
-      <input type="email" name="email" required>
+    <label>Email *</label>
+    <input type="email" name="email" required>
 
-      <label>Do you have a Realtor?</label>
-      <div class="radio-row">
-        <label><input type="radio" name="realtor" value="Yes"> Yes</label>
-        <label><input type="radio" name="realtor" value="No"> No</label>
-      </div>
+    <label>Do you have a Realtor?</label>
+    <div class="radio-row">
+      <label><input type="radio" name="realtor" value="Yes"> Yes</label>
+      <label><input type="radio" name="realtor" value="No"> No</label>
+    </div>
 
-      <label>How did you hear about the Open House?</label>
-      <textarea name="howHeard" rows="3" placeholder="e.g., Zillow, Sign, Social Media"></textarea>
+    <label>How did you hear about the Open House?</label>
+    <textarea name="howHeard" rows="3" placeholder="e.g., Zillow, Sign, Social Media"></textarea>
 
-      <button type="submit">Submit</button>
-    </form>
+    <button type="submit">Submit</button>
+  </form>
 
-    <p id="status"></p>
-  </div>
+  <p id="status"></p>
+</div>
 
-  <script>
-    document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+<script>
+  const currentDate = new Date().toLocaleDateString();
+  document.getElementById('currentDate').textContent = currentDate;
 
-    function showStatus() {
-      const status = document.getElementById('status');
-      status.textContent = "✅ Submission received!";
-      // Clear all fields except neighborhood & address
-      const form = document.getElementById('contactForm');
-      form.fullName.value = '';
-      form.phone.value = '';
-      form.email.value = '';
-      form.howHeard.value = '';
-      const radios = form.querySelectorAll('input[type=radio]');
-      radios.forEach(r => r.checked = false);
+  // Load saved neighborhood & address
+  window.onload = () => {
+    const savedNeighborhood = localStorage.getItem('neighborhood');
+    const savedAddress = localStorage.getItem('address');
+    if (savedNeighborhood) document.getElementById('neighborhood').value = savedNeighborhood;
+    if (savedAddress) document.getElementById('address').value = savedAddress;
+  };
 
-      // Auto-hide after 5 seconds
-      setTimeout(() => { status.textContent = ''; }, 5000);
-    }
-  </script>
+  function showStatus() {
+    const form = document.getElementById('contactForm');
+    const status = document.getElementById('status');
+
+    // Save neighborhood & address
+    localStorage.setItem('neighborhood', form.neighborhood.value);
+    localStorage.setItem('address', form.address.value);
+
+    // Show submission alert
+    status.textContent = "✅ Submission received!";
+
+    // Clear other fields
+    form.fullName.value = '';
+    form.phone.value = '';
+    form.email.value = '';
+    form.howHeard.value = '';
+    const radios = form.querySelectorAll('input[type=radio]');
+    radios.forEach(r => r.checked = false);
+
+    // Auto-hide alert
+    setTimeout(() => { status.textContent = ''; }, 5000);
+  }
+</script>
 </body>
 </html>
